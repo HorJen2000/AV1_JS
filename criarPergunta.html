@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Pergunta</title>
+    <script src="ajax.js"></script>
+    <script>
+        function criarPergunta(evento) {
+            evento.preventDefault(); // não deixa o formulário recarregar a página
+
+            let formulario = document.getElementById("frmPergunta");
+
+            enviarRequisicao("POST", "criarPergunta.php", new FormData(formulario), function (resposta) {
+                mostrarMensagem(resposta);
+                if (resposta.sucesso) formulario.reset();
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Criar Pergunta</h1>
+
+    <form id="frmPergunta" onsubmit="criarPergunta(event)">
+        ID:
+        <input type="number" name="id" required><br>
+
+        Pergunta:
+        <input type="text" name="pergunta" required><br>
+
+        Resposta 1:
+        <input type="text" name="resposta1" required><br>
+
+        Resposta 2:
+        <input type="text" name="resposta2" required><br>
+
+        Resposta 3:
+        <input type="text" name="resposta3" required><br>
+
+        Resposta Correta:
+        <input type="number" name="correta" min="1" max="3" required><br>
+
+        <input type="submit" value="Criar Pergunta">
+    </form>
+
+    <p id="msg"></p>
+
+    <a href="listarPerguntas.html">Listar perguntas</a> |
+    <a href="index.html">Menu</a>
+</body>
+</html>

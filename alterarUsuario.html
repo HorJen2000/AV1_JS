@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alterar Usuário</title>
+    <script src="ajax.js"></script>
+    <script>
+        function carregarUsuario() {
+            let email = pegarParametro("email");
+
+            enviarRequisicao("GET", "alterarUsuario.php?email=" + encodeURIComponent(email), null, function (resposta) {
+                if (!resposta.sucesso) {
+                    mostrarMensagem(resposta);
+                    return;
+                }
+                let u = resposta.usuario;
+                document.getElementById("emailAntigo").value = u.email;
+                document.getElementById("nome").value        = u.nome;
+                document.getElementById("email").value       = u.email;
+                document.getElementById("senha").value       = u.senha;
+            });
+        }
+
+        function atualizarUsuario(evento) {
+            evento.preventDefault();
+
+            let formulario = document.getElementById("frmUsuario");
+
+            enviarRequisicao("POST", "atualizarUsuario.php", new FormData(formulario), function (resposta) {
+                mostrarMensagem(resposta);
+                // Se o e-mail mudou, o "emailAntigo" passa a ser o novo
+                if (resposta.sucesso) {
+                    document.getElementById("emailAntigo").value = document.getElementById("email").value;
+                }
+            });
+        }
+
+        window.onload = carregarUsuario;
+    </script>
+</head>
+<body>
+    <h1>Alterar Usuário</h1>
+
+    <form id="frmUsuario" onsubmit="atualizarUsuario(event)">
+        <input type="hidden" name="emailAntigo" id="emailAntigo">
+
+        <label for="nome">Nome:</label>
+        <input type="text" name="nome" id="nome" required>
+        <br>
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" required>
+        <br>
+        <label for="senha">Senha:</label>
+        <input type="password" name="senha" id="senha" required>
+        <br>
+        <button type="submit">Atualizar</button>
+    </form>
+
+    <p id="msg"></p>
+
+    <a href="listarUsuarios.html">Voltar para a lista de usuários</a>
+</body>
+</html>

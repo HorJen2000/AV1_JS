@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listar Perguntas de Texto</title>
+    <script src="ajax.js"></script>
+    <script>
+        function carregarPerguntas() {
+            enviarRequisicao("GET", "listarPerguntasTexto.php", null, function (resposta) {
+
+                let corpo = document.getElementById("corpoTabela");
+                corpo.innerHTML = "";
+
+                for (let p of resposta.perguntas) {
+                    let tr = document.createElement("tr");
+
+                    adicionarCelula(tr, p.id);
+                    adicionarCelula(tr, p.pergunta);
+                    adicionarCelula(tr, p.resposta);
+
+                    let tdAlterar = adicionarCelula(tr, "");
+                    tdAlterar.innerHTML = '<a href="alterarTexto.html?id=' + encodeURIComponent(p.id) + '">Alterar</a>';
+
+                    corpo.appendChild(tr);
+                }
+            });
+        }
+
+        window.onload = carregarPerguntas;
+    </script>
+</head>
+<body>
+    <h1>Lista de Perguntas de Texto</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Pergunta</th>
+                <th>Resposta</th>
+                <th>Alterar</th>
+            </tr>
+        </thead>
+        <tbody id="corpoTabela"></tbody>
+    </table>
+
+    <br>
+    <a href="criarPerguntaTexto.html">Criar nova pergunta de texto</a> |
+    <a href="index.html">Menu</a>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alterar Pergunta de Texto</title>
+    <script src="ajax.js"></script>
+    <script>
+        function carregarPergunta() {
+            let id = pegarParametro("id");
+
+            enviarRequisicao("GET", "alterarTexto.php?id=" + encodeURIComponent(id), null, function (resposta) {
+                if (!resposta.sucesso) {
+                    mostrarMensagem(resposta);
+                    return;
+                }
+                document.getElementById("idPergunta").value = resposta.pergunta.id;
+                document.getElementById("pergunta").value   = resposta.pergunta.pergunta;
+                document.getElementById("resposta").value   = resposta.pergunta.resposta;
+            });
+        }
+
+        function atualizarPergunta(evento) {
+            evento.preventDefault();
+
+            let formulario = document.getElementById("frmPergunta");
+
+            enviarRequisicao("POST", "atualizarPergunta.php", new FormData(formulario), function (resposta) {
+                mostrarMensagem(resposta);
+            });
+        }
+
+        window.onload = carregarPergunta;
+    </script>
+</head>
+<body>
+    <h1>Alterar Pergunta</h1>
+
+    <form id="frmPergunta" onsubmit="atualizarPergunta(event)">
+        <input type="hidden" id="idPergunta" name="id">
+
+        <label for="pergunta">Pergunta:</label>
+        <input type="text" id="pergunta" name="pergunta" required><br><br>
+
+        <label for="resposta">Resposta:</label>
+        <input type="text" id="resposta" name="resposta" required><br><br>
+
+        <input type="submit" value="Atualizar Pergunta">
+    </form>
+
+    <p id="msg"></p>
+
+    <a href="listarPerguntasTexto.html">Voltar para a lista</a>
+</body>
+</html>

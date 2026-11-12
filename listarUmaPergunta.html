@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listar uma Pergunta</title>
+    <script src="ajax.js"></script>
+    <script>
+        function carregarPergunta() {
+            let id = pegarParametro("id");
+
+            enviarRequisicao("GET", "listarUmaPergunta.php?id=" + encodeURIComponent(id), null, function (resposta) {
+                if (!resposta.sucesso) {
+                    mostrarMensagem(resposta);
+                    return;
+                }
+                let p = resposta.pergunta;
+                document.getElementById("id").textContent        = p.id;
+                document.getElementById("pergunta").textContent  = p.pergunta;
+                document.getElementById("resposta1").textContent = p.resposta1;
+                document.getElementById("resposta2").textContent = p.resposta2;
+                document.getElementById("resposta3").textContent = p.resposta3;
+                document.getElementById("correta").textContent   = p.correta;
+            });
+        }
+
+        window.onload = carregarPergunta;
+    </script>
+</head>
+<body>
+    <h1>Visualizar Pergunta</h1>
+
+    <p id="msg"></p>
+
+    <p>ID: <span id="id"></span></p>
+    <p>Pergunta: <span id="pergunta"></span></p>
+    <p>Resposta 1: <span id="resposta1"></span></p>
+    <p>Resposta 2: <span id="resposta2"></span></p>
+    <p>Resposta 3: <span id="resposta3"></span></p>
+    <p>Resposta Correta: <span id="correta"></span></p>
+
+    <a href="listarPerguntas.html">Voltar para a lista</a>
+</body>
+</html>
