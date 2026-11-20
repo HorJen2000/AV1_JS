@@ -44,7 +44,7 @@
 
             enviarRequisicao("GET", "excluirPergunta.php?id=" + encodeURIComponent(id), null, function (resposta) {
                 mostrarMensagem(resposta);
-                carregarPerguntas(); // atualiza a tabela
+                carregarPerguntas();
             });
         }
 
