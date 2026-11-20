@@ -38,7 +38,7 @@
 
             enviarRequisicao("GET", "excluirUsuario.php?email=" + encodeURIComponent(email), null, function (resposta) {
                 mostrarMensagem(resposta);
-                carregarUsuarios(); // atualiza a tabela
+                carregarUsuarios();
             });
         }
 
