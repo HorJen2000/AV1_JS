@@ -29,7 +29,6 @@
 
             enviarRequisicao("POST", "atualizarUsuario.php", new FormData(formulario), function (resposta) {
                 mostrarMensagem(resposta);
-                // Se o e-mail mudou, o "emailAntigo" passa a ser o novo
                 if (resposta.sucesso) {
                     document.getElementById("emailAntigo").value = document.getElementById("email").value;
                 }
