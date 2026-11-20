@@ -1,9 +1,8 @@
 <?php
-header("Content-Type: application/json; charset=utf-8");
+require "conexao.php";
 
 if ($_SERVER["REQUEST_METHOD"] != "POST") {
-    echo json_encode(["sucesso" => false, "mensagem" => "Use POST."], JSON_UNESCAPED_UNICODE);
-    exit;
+    responder(["sucesso" => false, "mensagem" => "Use POST."]);
 }
 
 $id       = trim($_POST["id"] ?? "");
@@ -11,38 +10,18 @@ $pergunta = trim($_POST["pergunta"] ?? "");
 $resposta = trim($_POST["resposta"] ?? "");
 
 if ($pergunta == "" || $resposta == "") {
-    echo json_encode(["sucesso" => false, "mensagem" => "Preencha todos os campos."], JSON_UNESCAPED_UNICODE);
-    exit;
+    responder(["sucesso" => false, "mensagem" => "Preencha todos os campos."]);
 }
 
-$linhas = file("perguntasTexto.txt");
+$sql = $conexao->prepare("SELECT id FROM perguntas_texto WHERE id = ?");
+$sql->execute([$id]);
 
-$arquivo = fopen("perguntasTexto.txt", "w");
-
-$encontrou = false;
-
-foreach ($linhas as $linha) {
-
-    $dados = explode(";", trim($linha));
-
-    if ($dados[0] == $id) {
-
-        $novaLinha = $id . ";" . $pergunta . ";" . $resposta . "\n";
-
-        fwrite($arquivo, $novaLinha);
-        $encontrou = true;
-
-    } else {
-
-        fwrite($arquivo, $linha);
-    }
+if (!$sql->fetch()) {
+    responder(["sucesso" => false, "mensagem" => "Pergunta não encontrada."]);
 }
 
-fclose($arquivo);
+$sql = $conexao->prepare("UPDATE perguntas_texto SET pergunta = ?, resposta = ? WHERE id = ?");
+$sql->execute([$pergunta, $resposta, $id]);
 
-if ($encontrou) {
-    echo json_encode(["sucesso" => true, "mensagem" => "Pergunta atualizada com sucesso!"], JSON_UNESCAPED_UNICODE);
-} else {
-    echo json_encode(["sucesso" => false, "mensagem" => "Pergunta não encontrada."], JSON_UNESCAPED_UNICODE);
-}
+responder(["sucesso" => true, "mensagem" => "Pergunta atualizada com sucesso!"]);
 ?>

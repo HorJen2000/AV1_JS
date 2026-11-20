@@ -1,35 +1,16 @@
 <?php
-header("Content-Type: application/json; charset=utf-8");
+require "conexao.php";
 
 if (!isset($_GET["id"])) {
-    echo json_encode(["sucesso" => false, "mensagem" => "Informe o id."], JSON_UNESCAPED_UNICODE);
-    exit;
+    responder(["sucesso" => false, "mensagem" => "Informe o id."]);
 }
 
-$id = $_GET["id"];
+$sql = $conexao->prepare("DELETE FROM perguntas WHERE id = ?");
+$sql->execute([$_GET["id"]]);
 
-$linhas = file("perguntas.txt");
-
-$arquivo = fopen("perguntas.txt", "w");
-
-$encontrou = false;
-
-foreach ($linhas as $linha) {
-
-    $dados = explode(";", trim($linha));
-
-    if ($dados[0] != $id) {
-        fwrite($arquivo, $linha);
-    } else {
-        $encontrou = true;
-    }
-}
-
-fclose($arquivo);
-
-if ($encontrou) {
-    echo json_encode(["sucesso" => true, "mensagem" => "Pergunta excluída com sucesso!"], JSON_UNESCAPED_UNICODE);
+if ($sql->rowCount() > 0) {
+    responder(["sucesso" => true, "mensagem" => "Pergunta excluída com sucesso!"]);
 } else {
-    echo json_encode(["sucesso" => false, "mensagem" => "Pergunta não encontrada."], JSON_UNESCAPED_UNICODE);
+    responder(["sucesso" => false, "mensagem" => "Pergunta não encontrada."]);
 }
 ?>

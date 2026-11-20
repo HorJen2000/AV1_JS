@@ -19,11 +19,29 @@
                     adicionarCelula(tr, p.pergunta);
                     adicionarCelula(tr, p.resposta);
 
+                    let tdVer = adicionarCelula(tr, "");
+                    tdVer.innerHTML = '<a href="listarUmaPerguntaTexto.html?id=' + encodeURIComponent(p.id) + '">Ver</a>';
+
                     let tdAlterar = adicionarCelula(tr, "");
                     tdAlterar.innerHTML = '<a href="alterarTexto.html?id=' + encodeURIComponent(p.id) + '">Alterar</a>';
 
+                    let tdExcluir = adicionarCelula(tr, "");
+                    let botao = document.createElement("button");
+                    botao.textContent = "Excluir";
+                    botao.onclick = function () { excluirPergunta(p.id); };
+                    tdExcluir.appendChild(botao);
+
                     corpo.appendChild(tr);
                 }
+            });
+        }
+
+        function excluirPergunta(id) {
+            if (!confirm("Excluir a pergunta " + id + "?")) return;
+
+            enviarRequisicao("GET", "excluirPerguntaTexto.php?id=" + encodeURIComponent(id), null, function (resposta) {
+                mostrarMensagem(resposta);
+                carregarPerguntas();
             });
         }
 
@@ -33,13 +51,17 @@
 <body>
     <h1>Lista de Perguntas de Texto</h1>
 
+    <p id="msg"></p>
+
     <table border="1">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Pergunta</th>
                 <th>Resposta</th>
+                <th>Ver</th>
                 <th>Alterar</th>
+                <th>Excluir</th>
             </tr>
         </thead>
         <tbody id="corpoTabela"></tbody>

@@ -1,9 +1,8 @@
 <?php
-header("Content-Type: application/json; charset=utf-8");
+require "conexao.php";
 
 if ($_SERVER["REQUEST_METHOD"] != "POST") {
-    echo json_encode(["sucesso" => false, "mensagem" => "Use POST."], JSON_UNESCAPED_UNICODE);
-    exit;
+    responder(["sucesso" => false, "mensagem" => "Use POST."]);
 }
 
 $id       = trim($_POST["id"] ?? "");
@@ -11,31 +10,22 @@ $pergunta = trim($_POST["pergunta"] ?? "");
 $resposta = trim($_POST["resposta"] ?? "");
 
 if ($id == "" || $pergunta == "" || $resposta == "") {
-    echo json_encode(["sucesso" => false, "mensagem" => "Preencha todos os campos."], JSON_UNESCAPED_UNICODE);
-    exit;
+    responder(["sucesso" => false, "mensagem" => "Preencha todos os campos."]);
 }
 
-$linhas = file("perguntasTexto.txt");
-foreach ($linhas as $linha) {
-    $dados = explode(";", trim($linha));
-    if ($dados[0] == $id) {
-        echo json_encode(["sucesso" => false, "mensagem" => "Já existe uma pergunta com o id $id."], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
+if (!is_numeric($id)) {
+    responder(["sucesso" => false, "mensagem" => "O id deve ser um número."]);
 }
 
-$conteudo = file_get_contents("perguntasTexto.txt");
+$sql = $conexao->prepare("SELECT id FROM perguntas_texto WHERE id = ?");
+$sql->execute([$id]);
 
-$arquivo = fopen("perguntasTexto.txt", "a");
-
-if ($conteudo != "" && substr($conteudo, -1) != "\n") {
-    fwrite($arquivo, "\n");
+if ($sql->fetch()) {
+    responder(["sucesso" => false, "mensagem" => "Já existe uma pergunta com o id $id."]);
 }
 
-$novaLinha = $id . ";" . $pergunta . ";" . $resposta . "\n";
+$sql = $conexao->prepare("INSERT INTO perguntas_texto (id, pergunta, resposta) VALUES (?, ?, ?)");
+$sql->execute([$id, $pergunta, $resposta]);
 
-fwrite($arquivo, $novaLinha);
-fclose($arquivo);
-
-echo json_encode(["sucesso" => true, "mensagem" => "Pergunta criada com sucesso!"], JSON_UNESCAPED_UNICODE);
+responder(["sucesso" => true, "mensagem" => "Pergunta criada com sucesso!"]);
 ?>

@@ -1,33 +1,18 @@
 <?php
-header("Content-Type: application/json; charset=utf-8");
+require "conexao.php";
 
 if (!isset($_GET["id"])) {
-    echo json_encode(["sucesso" => false, "mensagem" => "Informe o id."], JSON_UNESCAPED_UNICODE);
-    exit;
+    responder(["sucesso" => false, "mensagem" => "Informe o id."]);
 }
 
-$id = $_GET["id"];
+$sql = $conexao->prepare("SELECT id, pergunta, resposta FROM perguntas_texto WHERE id = ?");
+$sql->execute([$_GET["id"]]);
 
-$linhas = file("perguntasTexto.txt");
-array_shift($linhas); // cabeçalho
+$pergunta = $sql->fetch();
 
-foreach ($linhas as $linha) {
-
-    $dados = explode(";", trim($linha));
-
-    if ($dados[0] == $id) {
-
-        echo json_encode([
-            "sucesso"  => true,
-            "pergunta" => [
-                "id"       => $dados[0],
-                "pergunta" => $dados[1],
-                "resposta" => $dados[2]
-            ]
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
+if (!$pergunta) {
+    responder(["sucesso" => false, "mensagem" => "Pergunta não encontrada."]);
 }
 
-echo json_encode(["sucesso" => false, "mensagem" => "Pergunta não encontrada."], JSON_UNESCAPED_UNICODE);
+responder(["sucesso" => true, "pergunta" => $pergunta]);
 ?>

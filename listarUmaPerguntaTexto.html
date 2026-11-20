@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar Pergunta de Texto</title>
+    <script src="ajax.js"></script>
+    <script>
+        function carregarPergunta() {
+            let id = pegarParametro("id");
+
+            enviarRequisicao("GET", "listarUmaPerguntaTexto.php?id=" + encodeURIComponent(id), null, function (resposta) {
+                if (!resposta.sucesso) {
+                    mostrarMensagem(resposta);
+                    return;
+                }
+                document.getElementById("id").textContent       = resposta.pergunta.id;
+                document.getElementById("pergunta").textContent = resposta.pergunta.pergunta;
+                document.getElementById("resposta").textContent = resposta.pergunta.resposta;
+            });
+        }
+
+        window.onload = carregarPergunta;
+    </script>
+</head>
+<body>
+    <h1>Visualizar Pergunta de Texto</h1>
+
+    <p id="msg"></p>
+
+    <p>ID: <span id="id"></span></p>
+    <p>Pergunta: <span id="pergunta"></span></p>
+    <p>Resposta: <span id="resposta"></span></p>
+
+    <a href="listarPerguntasTexto.html">Voltar para a lista</a>
+</body>
+</html>
